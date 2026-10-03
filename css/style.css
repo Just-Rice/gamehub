@@ -365,7 +365,8 @@ body.playing .play { display: block; }
   text-align: center;
 }
 
-.controls-hint kbd {
+.controls-hint kbd,
+.footer kbd {
   background: var(--panel-2);
   border: 1px solid var(--line);
   border-bottom-width: 2px;
@@ -514,6 +515,16 @@ body.playing .play { display: block; }
 
 .mono { font-family: var(--mono); }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* keyboard used by hangman + wordle */
 .keyboard {
   display: flex;
@@ -534,7 +545,13 @@ body.playing .play { display: block; }
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text);
-  font: 700 14px/1 inherit;
+  /* `inherit` can't sit inside the font shorthand (it voided the whole
+   * declaration and left the keys in the browser's button font). */
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
   border-radius: 7px;
   cursor: pointer;
   transition: .12s;
@@ -543,7 +560,7 @@ body.playing .play { display: block; }
 
 .key:hover:not(:disabled) { background: #2c3459; }
 .key:disabled { opacity: .38; cursor: default; }
-.key.wide { flex: 1.6 1 0; max-width: 68px; font-size: 12px; }
+.key.wide { flex: 1.6 1 0; max-width: 68px; font-size: 12px; min-width: max-content; padding: 0 4px; }
 .key.hit { background: var(--good); border-color: var(--good); color: #052e16; opacity: 1; }
 .key.miss { background: #3a2130; border-color: #5b2c42; color: #b8879b; opacity: 1; }
 .key.near { background: var(--warn); border-color: var(--warn); color: #3a2a03; opacity: 1; }
@@ -569,4 +586,10 @@ body.playing .play { display: block; }
   .card-desc { display: none; }
   .stage { padding: 12px; min-height: 320px; }
   .hud { width: 100%; margin-left: 0; }
+  /* Title on its own row so the two buttons wrap together, not one orphan. */
+  .brand { flex-basis: 100%; }
+  .topbar { margin-bottom: 12px; }
+  /* The footer wraps here, so the dot separators would dangle at line ends. */
+  .footer .sep { display: none; }
+  .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
 }

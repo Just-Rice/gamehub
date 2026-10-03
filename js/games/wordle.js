@@ -95,6 +95,7 @@ GameHub.register({
     }
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     var kb = api.el('div', 'keyboard');

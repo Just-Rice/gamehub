@@ -49,6 +49,7 @@ GameHub.register({
     var board = api.el('div', 'board');
     api.mount(board);
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     function bestKey() { return 'memory:best:' + sizeName; }

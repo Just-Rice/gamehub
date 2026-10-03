@@ -43,6 +43,7 @@ GameHub.register({
     }
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     record = GameHub.store.get('c4:record', { w: 0, l: 0, d: 0 });

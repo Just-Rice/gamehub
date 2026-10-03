@@ -43,6 +43,7 @@ GameHub.register({
     api.mount(boardEl);
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     els = U.range(9).map(function (i) {
