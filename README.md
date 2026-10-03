@@ -107,6 +107,17 @@ Writes two self-contained files:
 Both inline the CSS and every script in the order `index.html` declares, so the
 bundle can never drift from the source tree.
 
+## Smoke test
+
+```sh
+node tests/smoke.js
+```
+
+Opens the hub and every game (and every board size where a game has a size
+picker) at a 390×844 phone viewport and a desktop one, and fails on any console
+error or sideways scroll. Needs Playwright with Chromium installed; set
+`BASE=https://…` to run it against a deployed copy instead of the checkout.
+
 ## Conventions
 
 - Scores live in `localStorage` under `gh:` keys; "Reset scores" clears them.

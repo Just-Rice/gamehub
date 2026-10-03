@@ -5,7 +5,8 @@ GameHub.register({
   emoji: '💣',
   category: 'Puzzle',
   desc: 'Clear the field without detonating. First click is always safe.',
-  controls: 'Click to reveal · right-click (or long-press) to flag · click a number to chord',
+  controls: 'Click to reveal · right-click (or long-press) to flag · click a number to chord · ' +
+    '<kbd>Tab</kbd> to a cell, <kbd>Enter</kbd> reveals, <kbd>F</kbd> flags',
   scoreLabel: 'Wins',
 
   mount: function (api) {
@@ -66,8 +67,7 @@ GameHub.register({
       elapsed = 0;
       revealed = 0;
 
-      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', ' + cfg.size + 'px)';
-      board.style.gridAutoRows = cfg.size + 'px';
+      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', minmax(0, ' + cfg.size + 'px))';
       board.innerHTML = '';
       els = [];
 
@@ -93,6 +93,14 @@ GameHub.register({
       var el = api.el('div', 'cell');
       el.style.fontSize = Math.round(cfg.size * 0.52) + 'px';
       el.style.borderRadius = '5px';
+      /* Focusable so the board is playable from the keyboard too. */
+      el.tabIndex = 0;
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', 'Row ' + (r + 1) + ', column ' + (c + 1) + ', hidden');
+      api.on(el, 'keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); click(r, c); }
+        else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFlag(r, c); }
+      });
 
       var pressTimer = null;
       api.on(el, 'pointerdown', function (e) {
@@ -270,6 +278,9 @@ GameHub.register({
     function paint(r, c) {
       var cell = grid[r][c], el = els[r][c];
       el.classList.toggle('filled', cell.open);
+      el.setAttribute('aria-label', 'Row ' + (r + 1) + ', column ' + (c + 1) + ', ' +
+        (!cell.open ? (cell.flag ? 'flagged' : 'hidden')
+          : cell.mine ? 'mine' : cell.near ? cell.near + ' adjacent' : 'empty'));
 
       if (!cell.open) {
         el.textContent = cell.flag ? '🚩' : '';

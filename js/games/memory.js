@@ -5,7 +5,7 @@ GameHub.register({
   emoji: '🧠',
   category: 'Memory',
   desc: 'Flip cards, find the pairs, keep your move count down.',
-  controls: 'Click or tap a card to flip it',
+  controls: 'Click or tap a card to flip it · <kbd>Tab</kbd> + <kbd>Enter</kbd> also work',
   scoreLabel: 'Fewest moves',
   lowerIsBetter: true,
 
@@ -64,14 +64,22 @@ GameHub.register({
       moves = 0; found = 0; elapsed = 0; running = false;
 
       var size = cfg.cols > 4 ? 72 : 82;
-      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', ' + size + 'px)';
-      board.style.gridAutoRows = size + 'px';
+      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', minmax(0, ' + size + 'px))';
       board.innerHTML = '';
       els = cards.map(function (card, i) {
         var el = api.el('div', 'cell');
         el.style.fontSize = Math.round(size * 0.46) + 'px';
         el.textContent = '';
+        /* Focusable so the board is playable from the keyboard too. */
+        el.tabIndex = 0;
+        el.setAttribute('role', 'button');
+        el.setAttribute('aria-label', 'Card ' + (i + 1) + ', face down');
         api.on(el, 'pointerdown', function () { flip(i); });
+        api.on(el, 'keydown', function (e) {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          flip(i);
+        });
         board.appendChild(el);
         return el;
       });
@@ -91,6 +99,8 @@ GameHub.register({
       var card = cards[i], el = els[i];
       var shown = card.open || card.matched;
       el.textContent = shown ? card.face : '';
+      el.setAttribute('aria-label', 'Card ' + (i + 1) + ', ' +
+        (card.matched ? 'matched ' + card.face : shown ? card.face : 'face down'));
       el.style.background = card.matched ? 'rgba(74,222,128,.16)'
         : shown ? 'rgba(110,231,255,.14)' : '';
       el.style.borderColor = card.matched ? '#4ade80' : '';

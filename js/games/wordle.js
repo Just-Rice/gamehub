@@ -81,8 +81,7 @@ GameHub.register({
     var answer, guesses, current, over, stats, keyEls;
 
     var gridEl = api.el('div', 'board');
-    gridEl.style.gridTemplateColumns = 'repeat(' + LEN + ', 56px)';
-    gridEl.style.gridAutoRows = '56px';
+    gridEl.style.gridTemplateColumns = 'repeat(' + LEN + ', minmax(0, 56px))';
     gridEl.style.gap = '6px';
     api.mount(gridEl);
 

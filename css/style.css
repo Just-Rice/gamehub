@@ -153,7 +153,7 @@ body {
   border-radius: 10px;
 }
 
-.search::placeholder { color: #6d769c; }
+.search::placeholder { color: #8a93bb; }
 .search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 
 .chip {
@@ -315,7 +315,7 @@ body.playing .play { display: block; }
 }
 
 .hud-label {
-  font-size: 10.5px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
@@ -462,6 +462,11 @@ body.playing .play { display: block; }
 .pad-d { grid-area: 2 / 2; }
 .pad-r { grid-area: 2 / 3; }
 
+/* Thumb-sized hit areas wherever the primary pointer is a finger. */
+@media (pointer: coarse) {
+  .gbtn, .chip, .search { min-height: 44px; }
+}
+
 /* Pointer-having devices don't need the thumb controls. */
 @media (hover: hover) and (pointer: fine) {
   .dpad, .btn-bar.touch-only { display: none; }
@@ -472,8 +477,13 @@ body.playing .play { display: block; }
 .board {
   display: grid;
   gap: 8px;
+  max-width: 100%;
   user-select: none;
 }
+
+/* Columns are minmax(0, size) so a wide board shrinks to fit a phone instead
+ * of spilling off both edges; the square keeps each row as tall as it's wide. */
+.board > .cell { aspect-ratio: 1; min-width: 0; }
 
 .cell {
   display: flex;
@@ -537,13 +547,13 @@ body.playing .play { display: block; }
 .key.hit { background: var(--good); border-color: var(--good); color: #052e16; opacity: 1; }
 .key.miss { background: #3a2130; border-color: #5b2c42; color: #b8879b; opacity: 1; }
 .key.near { background: var(--warn); border-color: var(--warn); color: #3a2a03; opacity: 1; }
-.key.absent { background: #1a1f36; border-color: #232a49; color: #5a6288; opacity: 1; }
+.key.absent { background: #1a1f36; border-color: #232a49; color: #8a93bb; opacity: 1; }
 
 .footer {
   margin-top: 46px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  color: #6d769c;
+  color: #8a93bb;
   font-size: 13px;
   display: flex;
   gap: 12px;

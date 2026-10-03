@@ -39,8 +39,7 @@ GameHub.register({
     }
 
     var boardEl = api.el('div', 'board');
-    boardEl.style.gridTemplateColumns = 'repeat(3, 94px)';
-    boardEl.style.gridAutoRows = '94px';
+    boardEl.style.gridTemplateColumns = 'repeat(3, minmax(0, 94px))';
     api.mount(boardEl);
 
     var msg = api.el('div', 'msg');
