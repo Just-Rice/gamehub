@@ -11,6 +11,13 @@ GameHub.register({
   mount: function (api) {
     var W = 620, H = 380, PW = 12, PH = 74, TARGET = 7;
     var cv = api.canvas(W, H);
+
+    /* Canvas text scales with the canvas, so on a phone a 15px label lands
+     * around 7px. Size it up by however much the canvas is shrunk. */
+    function hintFont() {
+      var shrink = U.clamp(W / (cv.el.clientWidth || W), 1, 2.2);
+      return '700 ' + Math.round(15 * shrink) + 'px ui-sans-serif, system-ui, sans-serif';
+    }
     var ctx = cv.ctx;
     var U = GameHub.util;
 
@@ -168,7 +175,7 @@ GameHub.register({
 
       if (serveIn > 0 && !over) {
         ctx.fillStyle = 'rgba(232,236,255,.7)';
-        ctx.font = '700 15px ui-sans-serif, system-ui, sans-serif';
+        ctx.font = hintFont();
         ctx.fillText('First to ' + TARGET, W / 2, H - 26);
       }
     }
