@@ -64,6 +64,14 @@
     bad: function () { sound.seq([[220, 0, 0.14], [165, 0.1, 0.2]], 'sawtooth'); }
   };
 
+  /* Polite live region in the page shell; overlays read out through it. */
+  function announce(text) {
+    var el = document.getElementById('announcer');
+    if (!el) return;
+    el.textContent = '';
+    setTimeout(function () { el.textContent = text; }, 50);
+  }
+
   /* -------------------------------------------------------------- session */
 
   /* One api per launch. Everything registered here is reversible so that
@@ -305,17 +313,29 @@
           card.appendChild(api.el('p', null, l));
         });
         var row = api.el('div', 'overlay-actions');
+        var primary = null;
         (opts.buttons || [{ label: 'Play again', onClick: function () { api.restart(); }, primary: true }])
           .forEach(function (b) {
             var btn = api.el('button', 'gbtn' + (b.primary ? ' primary' : ''), b.label);
             btn.type = 'button';
             api.on(btn, 'click', function () { sound.click(); api.closeOverlay(); b.onClick(); });
             row.appendChild(btn);
+            if (b.primary || !primary) primary = btn;
           });
         card.appendChild(row);
+        ov.setAttribute('role', 'dialog');
+        ov.setAttribute('aria-label', opts.title || '');
         ov.appendChild(card);
         stage.appendChild(ov);
         api._overlay = ov;
+
+        /* Screen readers hear the card; keyboard players land on its main
+         * button. The delay keeps a held Space/Enter from the last move from
+         * activating it straight away. */
+        announce([opts.title].concat((opts.lines || []).slice(0, 2)).join('. '));
+        api.timeout(function () {
+          if (api._overlay === ov && primary) primary.focus({ preventScroll: true });
+        }, 400);
         return ov;
       },
 

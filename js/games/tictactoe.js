@@ -39,11 +39,11 @@ GameHub.register({
     }
 
     var boardEl = api.el('div', 'board');
-    boardEl.style.gridTemplateColumns = 'repeat(3, 94px)';
-    boardEl.style.gridAutoRows = '94px';
+    boardEl.style.gridTemplateColumns = 'repeat(3, minmax(0, 94px))';
     api.mount(boardEl);
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     els = U.range(9).map(function (i) {
@@ -197,7 +197,9 @@ GameHub.register({
       api.timeout(function () {
         api.overlay({
           emoji: emoji, title: title,
-          lines: mode === 'hard' && w.player === 'draw'
+          /* The W/L/D record only counts games against the CPU. */
+          lines: mode === '2p' ? []
+            : mode === 'hard' && w.player === 'draw'
             ? ['A draw is the best result against a perfect player.']
             : ['Record: ' + wins.w + 'W · ' + wins.l + 'L · ' + wins.d + 'D'],
           buttons: [

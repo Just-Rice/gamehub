@@ -43,6 +43,7 @@ GameHub.register({
     }
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     record = GameHub.store.get('c4:record', { w: 0, l: 0, d: 0 });
@@ -268,7 +269,9 @@ GameHub.register({
       api.timeout(function () {
         api.overlay({
           emoji: emoji, title: title,
-          lines: ['Record: ' + record.w + 'W · ' + record.l + 'L · ' + record.d + 'D'],
+          /* The W/L/D record only counts games against the CPU. */
+          lines: mode === '2p' ? []
+            : ['Record: ' + record.w + 'W · ' + record.l + 'L · ' + record.d + 'D'],
           buttons: [
             { label: 'Play again', primary: true, onClick: reset },
             { label: 'Hub', onClick: api.exit }

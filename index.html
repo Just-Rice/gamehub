@@ -28,17 +28,17 @@
       No engines, no sprites, no dependencies. Scores are saved in your browser.</p>
 
     <div class="filters">
-      <input class="search" id="search" type="search" placeholder="Search games…" autocomplete="off">
-      <span id="chips"></span>
+      <input class="search" id="search" type="search" placeholder="Search games…" aria-label="Search games" autocomplete="off">
+      <span id="chips" role="group" aria-label="Filter by category"></span>
     </div>
 
     <div class="grid" id="grid"></div>
 
     <div class="footer">
       <span>⌨️ Arrow keys / WASD in most games</span>
-      <span>·</span>
+      <span class="sep" aria-hidden="true">·</span>
       <span><kbd>Esc</kbd> returns to the hub</span>
-      <span>·</span>
+      <span class="sep" aria-hidden="true">·</span>
       <span>📱 Touch controls included</span>
     </div>
   </div>
@@ -55,6 +55,8 @@
   </div>
 
 </div>
+
+<div class="sr-only" id="announcer" aria-live="polite"></div>
 
 <script src="js/engine.js"></script>
 

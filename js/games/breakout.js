@@ -2,7 +2,7 @@
 GameHub.register({
   id: 'breakout',
   name: 'Breakout',
-  emoji: '🧱',
+  emoji: '🎯',
   category: 'Arcade',
   desc: 'Smash every brick. Catch power-ups, keep the ball alive.',
   controls: '<kbd>←</kbd><kbd>→</kbd> or move the mouse · <kbd>Space</kbd> launches',
@@ -10,6 +10,13 @@ GameHub.register({
   mount: function (api) {
     var W = 600, H = 440;
     var cv = api.canvas(W, H);
+
+    /* Canvas text scales with the canvas, so on a phone a 15px label lands
+     * around 7px. Size it up by however much the canvas is shrunk. */
+    function hintFont() {
+      var shrink = U.clamp(W / (cv.el.clientWidth || W), 1, 2.2);
+      return '700 ' + Math.round(15 * shrink) + 'px ui-sans-serif, system-ui, sans-serif';
+    }
     var ctx = cv.ctx;
     var U = GameHub.util;
 
@@ -275,7 +282,7 @@ GameHub.register({
 
       if (!launched && !over) {
         ctx.fillStyle = 'rgba(232,236,255,.75)';
-        ctx.font = '700 15px ui-sans-serif, system-ui, sans-serif';
+        ctx.font = hintFont();
         ctx.textAlign = 'center';
         ctx.fillText('Press Space or tap to launch', W / 2, H / 2 + 40);
       }

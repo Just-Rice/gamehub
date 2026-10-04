@@ -20,8 +20,7 @@ GameHub.register({
     var seq, inputIdx, accepting, strict, round;
 
     var board = api.el('div', 'board');
-    board.style.gridTemplateColumns = 'repeat(2, 116px)';
-    board.style.gridAutoRows = '116px';
+    board.style.gridTemplateColumns = 'repeat(2, minmax(0, 116px))';
     board.style.gap = '10px';
 
     var els = PADS.map(function (p, i) {
@@ -40,6 +39,7 @@ GameHub.register({
     });
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(board);
     api.mount(msg);
 

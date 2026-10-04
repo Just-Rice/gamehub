@@ -153,7 +153,7 @@ body {
   border-radius: 10px;
 }
 
-.search::placeholder { color: #6d769c; }
+.search::placeholder { color: #8a93bb; }
 .search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 
 .chip {
@@ -315,7 +315,7 @@ body.playing .play { display: block; }
 }
 
 .hud-label {
-  font-size: 10.5px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
@@ -365,7 +365,8 @@ body.playing .play { display: block; }
   text-align: center;
 }
 
-.controls-hint kbd {
+.controls-hint kbd,
+.footer kbd {
   background: var(--panel-2);
   border: 1px solid var(--line);
   border-bottom-width: 2px;
@@ -462,6 +463,11 @@ body.playing .play { display: block; }
 .pad-d { grid-area: 2 / 2; }
 .pad-r { grid-area: 2 / 3; }
 
+/* Thumb-sized hit areas wherever the primary pointer is a finger. */
+@media (pointer: coarse) {
+  .gbtn, .chip, .search { min-height: 44px; }
+}
+
 /* Pointer-having devices don't need the thumb controls. */
 @media (hover: hover) and (pointer: fine) {
   .dpad, .btn-bar.touch-only { display: none; }
@@ -472,8 +478,13 @@ body.playing .play { display: block; }
 .board {
   display: grid;
   gap: 8px;
+  max-width: 100%;
   user-select: none;
 }
+
+/* Columns are minmax(0, size) so a wide board shrinks to fit a phone instead
+ * of spilling off both edges; the square keeps each row as tall as it's wide. */
+.board > .cell { aspect-ratio: 1; min-width: 0; }
 
 .cell {
   display: flex;
@@ -504,6 +515,16 @@ body.playing .play { display: block; }
 
 .mono { font-family: var(--mono); }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* keyboard used by hangman + wordle */
 .keyboard {
   display: flex;
@@ -524,7 +545,13 @@ body.playing .play { display: block; }
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text);
-  font: 700 14px/1 inherit;
+  /* `inherit` can't sit inside the font shorthand (it voided the whole
+   * declaration and left the keys in the browser's button font). */
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
   border-radius: 7px;
   cursor: pointer;
   transition: .12s;
@@ -533,17 +560,17 @@ body.playing .play { display: block; }
 
 .key:hover:not(:disabled) { background: #2c3459; }
 .key:disabled { opacity: .38; cursor: default; }
-.key.wide { flex: 1.6 1 0; max-width: 68px; font-size: 12px; }
+.key.wide { flex: 1.6 1 0; max-width: 68px; font-size: 12px; min-width: max-content; padding: 0 4px; }
 .key.hit { background: var(--good); border-color: var(--good); color: #052e16; opacity: 1; }
 .key.miss { background: #3a2130; border-color: #5b2c42; color: #b8879b; opacity: 1; }
 .key.near { background: var(--warn); border-color: var(--warn); color: #3a2a03; opacity: 1; }
-.key.absent { background: #1a1f36; border-color: #232a49; color: #5a6288; opacity: 1; }
+.key.absent { background: #1a1f36; border-color: #232a49; color: #8a93bb; opacity: 1; }
 
 .footer {
   margin-top: 46px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  color: #6d769c;
+  color: #8a93bb;
   font-size: 13px;
   display: flex;
   gap: 12px;
@@ -559,4 +586,10 @@ body.playing .play { display: block; }
   .card-desc { display: none; }
   .stage { padding: 12px; min-height: 320px; }
   .hud { width: 100%; margin-left: 0; }
+  /* Title on its own row so the two buttons wrap together, not one orphan. */
+  .brand { flex-basis: 100%; }
+  .topbar { margin-bottom: 12px; }
+  /* The footer wraps here, so the dot separators would dangle at line ends. */
+  .footer .sep { display: none; }
+  .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
 }

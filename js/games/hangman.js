@@ -46,7 +46,7 @@ GameHub.register({
 
     var wordEl = api.el('div', 'mono');
     wordEl.style.cssText =
-      'font-size:30px;letter-spacing:.24em;font-weight:800;text-align:center;min-height:40px';
+      'font-size:min(30px, 5.6vw);letter-spacing:.24em;font-weight:800;text-align:center;min-height:40px';
     api.mount(wordEl);
 
     var hintEl = api.el('div', 'msg');

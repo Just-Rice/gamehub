@@ -5,7 +5,8 @@ GameHub.register({
   emoji: '💣',
   category: 'Puzzle',
   desc: 'Clear the field without detonating. First click is always safe.',
-  controls: 'Click to reveal · right-click (or long-press) to flag · click a number to chord',
+  controls: 'Click to reveal · right-click (or long-press) to flag · click a number to chord · ' +
+    '<kbd>Tab</kbd> to the board, arrows move, <kbd>Enter</kbd> reveals, <kbd>F</kbd> flags',
   scoreLabel: 'Wins',
 
   mount: function (api) {
@@ -50,6 +51,7 @@ GameHub.register({
     api.on(board, 'contextmenu', function (e) { e.preventDefault(); });
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(msg);
 
     function bestKey() { return 'mines:best:' + level; }
@@ -66,8 +68,7 @@ GameHub.register({
       elapsed = 0;
       revealed = 0;
 
-      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', ' + cfg.size + 'px)';
-      board.style.gridAutoRows = cfg.size + 'px';
+      board.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', minmax(0, ' + cfg.size + 'px))';
       board.innerHTML = '';
       els = [];
 
@@ -82,6 +83,10 @@ GameHub.register({
       msg.innerHTML = best === null
         ? 'Find all ' + cfg.mines + ' mines.'
         : 'Best ' + level + ' time: <strong>' + best + 's</strong>';
+      /* Hard still fits a phone, but its cells shrink below a comfortable tap. */
+      if (level === 'hard' && window.matchMedia('(max-width: 560px)').matches) {
+        msg.innerHTML += '<br>Cells are tiny on a phone; Easy or Medium play better here.';
+      }
 
       api.hud('Mines', cfg.mines);
       api.hud('Time', 0);
@@ -93,6 +98,22 @@ GameHub.register({
       var el = api.el('div', 'cell');
       el.style.fontSize = Math.round(cfg.size * 0.52) + 'px';
       el.style.borderRadius = '5px';
+      /* One Tab stop for the whole board; arrow keys move between cells. */
+      el.tabIndex = r === 0 && c === 0 ? 0 : -1;
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', 'Row ' + (r + 1) + ', column ' + (c + 1) + ', hidden');
+      api.on(el, 'keydown', function (e) {
+        var step = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[e.key];
+        if (step) {
+          e.preventDefault();
+          var nr = U.clamp(r + step[0], 0, cfg.rows - 1), nc = U.clamp(c + step[1], 0, cfg.cols - 1);
+          el.tabIndex = -1;
+          els[nr][nc].tabIndex = 0;
+          els[nr][nc].focus();
+        }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); click(r, c); }
+        else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFlag(r, c); }
+      });
 
       var pressTimer = null;
       api.on(el, 'pointerdown', function (e) {
@@ -270,6 +291,9 @@ GameHub.register({
     function paint(r, c) {
       var cell = grid[r][c], el = els[r][c];
       el.classList.toggle('filled', cell.open);
+      el.setAttribute('aria-label', 'Row ' + (r + 1) + ', column ' + (c + 1) + ', ' +
+        (!cell.open ? (cell.flag ? 'flagged' : 'hidden')
+          : cell.mine ? 'mine' : cell.near ? cell.near + ' adjacent' : 'empty'));
 
       if (!cell.open) {
         el.textContent = cell.flag ? '🚩' : '';

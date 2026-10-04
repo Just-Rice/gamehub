@@ -27,6 +27,7 @@
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'chip' + (cat === filter.cat ? ' active' : '');
+      b.setAttribute('aria-pressed', String(cat === filter.cat));
       b.textContent = cat;
       b.onclick = function () { filter.cat = cat; renderChips(); renderGrid(); };
       chipsEl.appendChild(b);
@@ -127,6 +128,7 @@
     var on = GameHub.sound.enabled;
     soundBtn.textContent = on ? '🔊 Sound' : '🔇 Muted';
     soundBtn.classList.toggle('on', on);
+    soundBtn.setAttribute('aria-pressed', String(on));
   }
   soundBtn.onclick = function () {
     GameHub.sound.enabled = !GameHub.sound.enabled;

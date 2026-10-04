@@ -15,8 +15,7 @@ GameHub.register({
     var score, misses, streak, timeLeft, running, spawnTimer, upTime;
 
     var board = api.el('div', 'board');
-    board.style.gridTemplateColumns = 'repeat(' + SIZE + ', 92px)';
-    board.style.gridAutoRows = '92px';
+    board.style.gridTemplateColumns = 'repeat(' + SIZE + ', minmax(0, 92px))';
 
     for (var i = 0; i < TOTAL; i++) {
       (function (idx) {
@@ -32,6 +31,7 @@ GameHub.register({
     }
 
     var msg = api.el('div', 'msg');
+    msg.setAttribute('aria-live', 'polite');
     api.mount(board);
     api.mount(msg);
 
