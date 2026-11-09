@@ -66,8 +66,11 @@ GameHub.register({
 
       var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
-      if (head.x < 0 || head.y < 0 || head.x >= COLS || head.y >= ROWS ||
-          occupied(head.x, head.y)) {
+      /* The tail moves out of the way this step unless the snake is growing,
+       * so following it closely is allowed (food is never on the snake). */
+      var tail = grow > 0 ? null : snake[snake.length - 1];
+      var bites = snake.some(function (s) { return s !== tail && s.x === head.x && s.y === head.y; });
+      if (head.x < 0 || head.y < 0 || head.x >= COLS || head.y >= ROWS || bites) {
         return die();
       }
 

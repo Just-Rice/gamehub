@@ -78,7 +78,7 @@ GameHub.register({
     var SET = {};
     WORDS.forEach(function (w) { SET[w] = true; });
 
-    var answer, guesses, current, over, stats, keyEls;
+    var answer, guesses, current, over, revealing, stats, keyEls;
 
     var gridEl = api.el('div', 'board');
     gridEl.style.gridTemplateColumns = 'repeat(' + LEN + ', 56px)';
@@ -125,6 +125,7 @@ GameHub.register({
       guesses = [];
       current = '';
       over = false;
+      revealing = false;
       tiles.forEach(function (t) {
         t.textContent = '';
         t.style.background = '';
@@ -151,14 +152,14 @@ GameHub.register({
     }
 
     function type(ch) {
-      if (over || current.length >= LEN) return;
+      if (over || revealing || current.length >= LEN) return;
       current += ch;
       GameHub.sound.tone(400, 0.025, 'triangle', 0.02);
       paintCurrent();
     }
 
     function backspace() {
-      if (over || !current.length) return;
+      if (over || revealing || !current.length) return;
       current = current.slice(0, -1);
       paintCurrent();
     }
@@ -192,7 +193,9 @@ GameHub.register({
     }
 
     function submit() {
-      if (over) return;
+      /* Not while a row is still turning over: a quick enter after the sixth
+       * guess (or the winning one) used to add a row that does not exist. */
+      if (over || revealing) return;
       if (current.length < LEN) { msg.textContent = 'Needs ' + LEN + ' letters.'; return shakeRow(); }
       if (!SET[current]) { msg.textContent = '“' + current + '” is not in the word list.'; return shakeRow(); }
 
@@ -201,6 +204,7 @@ GameHub.register({
       var row = guesses.length;
       guesses.push({ word: guess, res: res });
       current = '';
+      revealing = true;
       msg.textContent = '';
 
       /* Reveal tile by tile. */
@@ -228,6 +232,7 @@ GameHub.register({
       });
 
       api.timeout(function () {
+        revealing = false;
         api.hud('Guess', Math.min(guesses.length + 1, TRIES) + '/' + TRIES);
         if (guess === answer) return finish(true);
         if (guesses.length >= TRIES) return finish(false);
