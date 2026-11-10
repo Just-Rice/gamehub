@@ -199,6 +199,8 @@ GameHub.register({
     reset();
 
     api.onKey(function (e) {
+      /* Ctrl+R and friends are browser shortcuts, not guesses. */
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       var ch = (e.key || '').toUpperCase();
       if (ch.length === 1 && ch >= 'A' && ch <= 'Z') guess(ch);
     });

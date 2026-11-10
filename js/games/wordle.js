@@ -77,6 +77,8 @@ GameHub.register({
 
     var SET = {};
     WORDS.forEach(function (w) { SET[w] = true; });
+    /* Any real word is a fair guess, not only the ones that can be answers. */
+    (GameHub.wordleGuesses || '').toUpperCase().replace(/[A-Z]{5}/g, function (w) { SET[w] = true; });
 
     var answer, guesses, current, over, stats, keyEls;
 
@@ -289,7 +291,11 @@ GameHub.register({
     reset();
 
     api.onKey(function (e) {
-      if (e.key === 'Enter') return submit();
+      /* Leave browser shortcuts alone: Ctrl+R is a reload, not the letter R. */
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      /* preventDefault, or Enter also clicks whichever on-screen key was
+       * tapped last and types its letter into the next row. */
+      if (e.key === 'Enter') { e.preventDefault(); return submit(); }
       if (e.key === 'Backspace') { e.preventDefault(); return backspace(); }
       var ch = (e.key || '').toUpperCase();
       if (ch.length === 1 && ch >= 'A' && ch <= 'Z') type(ch);
