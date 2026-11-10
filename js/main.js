@@ -137,9 +137,19 @@
 
   $('resetBtn').onclick = function () {
     if (!confirm('Clear every saved high score?')) return;
-    GameHub.games.forEach(function (g) {
-      try { localStorage.removeItem('gh:best:' + g.id); } catch (e) {}
-    });
+    /* Every score, not only the headline one on each card: Minesweeper's best
+     * times, Memory's best per board size, the Wordle streak and the win/loss
+     * records are kept under their own names. Choices (sound, difficulty,
+     * board size) are settings, not scores, and stay. */
+    var KEEP = /^gh:(sound$|[^:]+:(mode|level|size)$)/;
+    try {
+      var doomed = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('gh:') === 0 && !KEEP.test(k)) doomed.push(k);
+      }
+      doomed.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) {}
     renderGrid();
   };
 
